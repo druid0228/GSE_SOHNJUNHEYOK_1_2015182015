@@ -5,16 +5,19 @@ class Renderer;
 
 //	need e 
 inline bool IsZero(double n) { return abs(n)<FLT_EPSILON; }
-
 class Object
 {
 public:
 	double m_posX, m_posY;
 	double m_vecX, m_vecY;
 	double m_speed;
+	float m_size;
+	float m_R, m_G, m_B, m_A;
+	bool m_collide;
 
 	double m_hp;
 	Renderer *m_Renderer = NULL;
+	Renderer *m_SceneRender = NULL;
 public:
 	void SetPosition(double x, double y) { m_posX = x; m_posY = y; }
 	void SetVector(double x, double y) { m_vecX = x; m_vecY = y; }
@@ -29,11 +32,20 @@ public:
 		if (abs(m_vecX)<0.1)m_vecX = 0;
 		if (abs(m_vecY)<0.1)m_vecY = 0;
 	}
+public:
+	collideRect getCollideRect()const {
+		return collideRect(m_posX, m_posY, m_size);
+	}
+	double getVecX()const { return m_vecX; }
+	double getVecY()const { return m_vecY; }
+	void setFlagCollide(bool b) { m_collide = b; }
+	bool getFlagCollide()const { return m_collide; }
 
 public:
 	Object();
 	virtual void Render();
 
+	virtual void InitializeRand(Renderer *Render);
 	virtual void InitializeRenderer();
 	virtual void Update();
 	virtual void Animate();

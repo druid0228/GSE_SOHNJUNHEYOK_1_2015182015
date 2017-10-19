@@ -14,18 +14,22 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\freeglut.h"
 
 #include "Renderer.h"
-#include"Object.h"
+#include"SceneMgr.h"
+//#include"Object.h"
 #include<math.h>
 
 Renderer *g_Renderer = NULL;
-Object object;
+SceneMgr g_Scene;
+
+//Object object;
 int g = -250;
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
-	object.Update();
+	g_Scene.Update();
+	//object.Update();
 	// Renderer Test
 	//g_Renderer->DrawSolidRect(++g > 250 ? g = -250 : g, 0, 0, 100, 1, 1, 1, 1);
 	glutSwapBuffers();
@@ -40,14 +44,14 @@ void MouseInput(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP)
 	{
-		object.SetPosition(x - 500 / 2, 500 / 2 - y);
-		object.SetVector(rand()%100/(float)100, rand() % 100 / (float)100);
+		//object.SetPosition(x - 500 / 2, 500 / 2 - y);
+		//object.SetVector(rand()%100/(float)100, rand() % 100 / (float)100);
 	}
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN)
 	{
-		object.SetPosition(x - 500 / 2, 500 / 2 - y);
+		//object.SetPosition(x - 500 / 2, 500 / 2 - y);
 		//object.SetPosition(0, 0);
-		object.SetVector(0, 0);
+		//object.SetVector(0, 0);
 	}
 
 	RenderScene();
@@ -62,19 +66,19 @@ void SpecialKeyInput(int key, int x, int y)
 {
 	if (key == GLUT_KEY_DOWN)
 	{
-		object.PlusVector(0, -1);
+		//object.PlusVector(0, -1);
 	}
 	if (key == GLUT_KEY_UP)
 	{
-		object.PlusVector(0, 1);
+		//object.PlusVector(0, 1);
 	}
 	if (key == GLUT_KEY_LEFT)
 	{
-		object.PlusVector(-1, 0);
+		//object.PlusVector(-1, 0);
 	}
 	if (key == GLUT_KEY_RIGHT)
 	{
-		object.PlusVector(1,0);
+	//	object.PlusVector(1,0);
 	}
 
 	RenderScene();
@@ -100,13 +104,14 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
-	object.InitializeRenderer();
+	//g_Renderer = new Renderer(500, 500);
+	//if (!g_Renderer->IsInitialized())
+	//{
+	//	std::cout << "Renderer could not be initialized.. \n";
+	//}
+	//object.InitializeRenderer();
 
+	g_Scene.Initalize();
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
