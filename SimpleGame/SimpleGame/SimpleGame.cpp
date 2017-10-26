@@ -25,13 +25,13 @@ SceneMgr g_Scene;
 int g = -250;
 void RenderScene(void)
 {
+	g_Scene.Tick();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+	glClearColor(CLEARCOLORBLACK);
 
 	g_Scene.Update();
-	//object.Update();
-	// Renderer Test
-	//g_Renderer->DrawSolidRect(++g > 250 ? g = -250 : g, 0, 0, 100, 1, 1, 1, 1);
+	
 	glutSwapBuffers();
 }
 
@@ -44,6 +44,9 @@ void MouseInput(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP)
 	{
+		if (g_Scene.CanObjectAdd()){
+			g_Scene.AddObject(x - 500 / 2, 500 / 2 - y);
+		}
 		//object.SetPosition(x - 500 / 2, 500 / 2 - y);
 		//object.SetVector(rand()%100/(float)100, rand() % 100 / (float)100);
 	}
@@ -111,7 +114,6 @@ int main(int argc, char **argv)
 	//}
 	//object.InitializeRenderer();
 
-	g_Scene.Initalize();
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -119,6 +121,7 @@ int main(int argc, char **argv)
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyInput);
 
+	g_Scene.Initalize();
 	glutMainLoop();
 
 	delete g_Renderer;

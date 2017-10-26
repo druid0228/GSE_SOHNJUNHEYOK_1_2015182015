@@ -1,13 +1,13 @@
 #pragma once
 #include<iostream>
 #include<math.h>
+
 class Renderer;
 
 //	need e 
 inline bool IsZero(double n) { return abs(n)<FLT_EPSILON; }
 class Object
 {
-public:
 	double m_posX, m_posY;
 	double m_vecX, m_vecY;
 	double m_speed;
@@ -18,6 +18,10 @@ public:
 	double m_hp;
 	Renderer *m_Renderer = NULL;
 	Renderer *m_SceneRender = NULL;
+public:
+	void damage(double d) { m_hp -= d; }
+	double getHp()const { return m_hp; }
+	double IsDead() const { return m_hp <= 0; };
 public:
 	void SetPosition(double x, double y) { m_posX = x; m_posY = y; }
 	void SetVector(double x, double y) { m_vecX = x; m_vecY = y; }
@@ -47,8 +51,8 @@ public:
 
 	virtual void InitializeRand(Renderer *Render);
 	virtual void InitializeRenderer();
-	virtual void Update();
-	virtual void Animate();
+	virtual void Update(double ElapsedTime);
+	virtual void Animate(double ElapsedTime);
 	virtual void Idle();
 	virtual void MouseInputProcess();
 	virtual void KeyInputProcess();

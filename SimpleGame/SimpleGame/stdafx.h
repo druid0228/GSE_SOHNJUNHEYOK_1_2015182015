@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include<time.h>
 
 struct collideRect
 {
@@ -23,3 +24,8 @@ struct collideRect
 		return true;
 	}
 };
+
+#define CLEARCOLORBLACK	0.0f, 0.0f, 0.0f, 1.0f
+#define CLEARCOLOR	0.0f, 0.3f, 0.3f, 1.0f
+
+#include<Windows.h>
