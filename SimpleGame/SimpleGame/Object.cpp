@@ -6,7 +6,7 @@ Object::Object()
 {
 	m_posX = 0;
 	m_posY = 0;
-	m_hp = 10;
+	m_life = 10;
 	m_vecX = m_vecY =0;
 	m_speed = 1;
 	m_size = 40;
@@ -15,8 +15,10 @@ Object::Object()
 	m_collide = false;
 }
 
+#define COLLIDE_CHECK_RED
 void Object::Render()
 {
+#ifdef COLLIDE_CHECK_RED
 	if (!m_SceneRender) {
 		if (!m_collide)
 			m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
@@ -30,9 +32,70 @@ void Object::Render()
 		else
 			m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, 0, 0, m_A);
 	}
+#else
+	if (!m_SceneRender) {
+		m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+	}
+	else {
+		m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+	}
+#endif
 }
 //#define RANDOM_SIZE
 
+void Object::Initialize(ObjectType type, Renderer * SceneRender)
+{
+	m_SceneRender = SceneRender;
+	m_type = type;
+
+	switch (m_type)
+	{
+	case ObjectType::OBJECT_BUILDING:
+		m_size = 50;
+		m_life = 500;
+		m_speed = 0;
+		m_R = 1.0f;
+		m_G = 1.0f;
+		m_B = 0.0f;
+		m_collide = false;
+		break;
+	case ObjectType::OBJECT_CHARACTER:
+		m_size = 10;
+		m_life = 10;
+		m_speed = 300;
+		m_R = 1.0f;
+		m_G = 1.0f;
+		m_B = 1.0f;
+		m_vecX = (rand() % 200 - 100)*0.01;
+		m_vecY = (rand() % 200 - 100)*0.01;
+		m_collide = false;
+		break;
+	case ObjectType::OBJECT_BULLET:
+		m_size = 2;
+		m_life = 20;
+		m_speed = 600;
+		m_R = 1.0f;
+		m_G = 0.0f;
+		m_B = 0.0f;
+		m_vecX = (rand() % 200 - 100)*0.01;
+		m_vecY = (rand() % 200 - 100)*0.01;
+		m_collide = false;
+		break;
+	case ObjectType::OBJECT_ARROW:
+		m_size = 2;
+		m_life = 10;
+		m_speed = 100;
+		m_R = 0.0f;
+		m_G = 1.0f;
+		m_B = 0.0f;
+		m_vecX = (rand() % 200 - 100)*0.01;
+		m_vecY = (rand() % 200 - 100)*0.01;
+		m_collide = false;
+		break;
+	}
+}
+
+// NOT	USE
 void Object::InitializeRand(Renderer *Render)
 {
 	m_posX = rand() % 500 - 250;
@@ -46,9 +109,10 @@ void Object::InitializeRand(Renderer *Render)
 #else
 	m_size = 40;
 #endif 
-	m_hp = 10;
+	m_life = 10;
 	m_collide = false;
 	m_SceneRender = Render;
+	m_lifeTime = 10;
 	InitializeRenderer();
 }
 
@@ -65,6 +129,7 @@ void Object::InitializeRenderer()
 
 void Object::Update(double ElapsedTime)
 {
+	m_lifeTime -= ElapsedTime;
 	MouseInputProcess();
 	KeyInputProcess();
 	SpecialKeyInputProcess();
@@ -107,11 +172,8 @@ void Object::KeyInputProcess()
 }
 
 void Object::SpecialKeyInputProcess()
-{
-}
-
-
+{}
 Object::~Object()
 {
-	delete m_Renderer;
+	if(m_Renderer)delete m_Renderer;
 }

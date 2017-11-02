@@ -25,6 +25,25 @@ struct collideRect
 	}
 };
 
+enum class ObjectType {
+	OBJECT_BUILDING,
+	OBJECT_CHARACTER,
+	OBJECT_BULLET,
+	OBJECT_ARROW,
+};
+inline bool IsAlly(ObjectType a, ObjectType b)
+{
+	if (a == ObjectType::OBJECT_BUILDING&&b == ObjectType::OBJECT_BULLET)
+		return true;
+	if (a == ObjectType::OBJECT_BULLET&&b == ObjectType::OBJECT_BUILDING)
+		return true;
+	return false;
+}
+//	need e 
+#include<math.h>
+#include<iostream>
+inline bool IsZero(double n) { return abs(n)<FLT_EPSILON; }
+
 #define CLEARCOLORBLACK	0.0f, 0.0f, 0.0f, 1.0f
 #define CLEARCOLOR	0.0f, 0.3f, 0.3f, 1.0f
 

@@ -45,7 +45,7 @@ void MouseInput(int button, int state, int x, int y)
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP)
 	{
 		if (g_Scene.CanObjectAdd()){
-			g_Scene.AddObject(x - 500 / 2, 500 / 2 - y);
+			g_Scene.AddActorObject(x - 500 / 2, 500 / 2 - y,ObjectType::OBJECT_CHARACTER);
 		}
 		//object.SetPosition(x - 500 / 2, 500 / 2 - y);
 		//object.SetVector(rand()%100/(float)100, rand() % 100 / (float)100);
