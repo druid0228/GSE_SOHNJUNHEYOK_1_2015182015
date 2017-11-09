@@ -27,10 +27,16 @@ void Object::Render()
 	}
 	else
 	{
-		if (!m_collide)
-			m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
-		else
-			m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, 0, 0, m_A);
+		if(m_haveTex)
+		{
+			m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A, m_TextureID);
+		}
+		else {
+			if (!m_collide)
+				m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+			else
+				m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, 0, 0, m_A);
+		}
 	}
 #else
 	if (!m_SceneRender) {
@@ -47,7 +53,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 {
 	m_SceneRender = SceneRender;
 	m_type = type;
-
+	float norm;
 	switch (m_type)
 	{
 	case ObjectType::OBJECT_BUILDING:
@@ -58,6 +64,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_G = 1.0f;
 		m_B = 0.0f;
 		m_collide = false;
+		m_id = 0;
 		break;
 	case ObjectType::OBJECT_CHARACTER:
 		m_size = 10;
@@ -68,7 +75,12 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_B = 1.0f;
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
+		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
+		if (IsZero(norm))norm = 1;
+		m_vecX /= norm;
+		m_vecY /= norm;
 		m_collide = false;
+		m_id = 0;
 		break;
 	case ObjectType::OBJECT_BULLET:
 		m_size = 2;
@@ -80,6 +92,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
 		m_collide = false;
+		m_id = 0;
 		break;
 	case ObjectType::OBJECT_ARROW:
 		m_size = 2;
@@ -91,6 +104,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
 		m_collide = false;
+		m_id = 0;
 		break;
 	}
 }
@@ -130,6 +144,7 @@ void Object::InitializeRenderer()
 void Object::Update(double ElapsedTime)
 {
 	m_lifeTime -= ElapsedTime;
+	t_Arrow_CoolTime += ElapsedTime;
 	MouseInputProcess();
 	KeyInputProcess();
 	SpecialKeyInputProcess();

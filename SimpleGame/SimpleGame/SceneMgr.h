@@ -1,7 +1,10 @@
 #pragma once
-#define MAX_OBJECTS_COUNT		100
+#define MAX_OBJECTS_COUNT		111
 #define MAX_CHARACTER_COUNT	10
 #define MAX_BULLET_COUNT			50
+#define MAX_ARROW_COUNT			50
+
+#define ARROW_COOL_TIME			0.5f
 
 class Object;
 
@@ -11,9 +14,14 @@ class SceneMgr
 	Renderer *m_objectsRenderer=NULL;
 	int m_Character_objCnt=0;
 	double t_current_time = 0, t_ElapsedTime = 0;
-	
+
 	int m_Bullet_objCnt = 0;
 	double t_lastBulletCreate = 0;
+	
+	int m_idAlignment = 0;
+	int m_Arrow_objCnt = 0;
+
+	unsigned int buildingTex;
 public:
 	SceneMgr();
 	~SceneMgr();

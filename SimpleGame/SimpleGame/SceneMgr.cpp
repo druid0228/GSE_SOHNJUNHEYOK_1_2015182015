@@ -41,6 +41,7 @@ void SceneMgr::InitializeObjects()
 		m_objects[i]->InitializeRand(m_objectsRenderer);
 		++m_Character_objCnt;
 	}*/
+	buildingTex = m_objectsRenderer->CreatePngTexture("./Textures/building.png");
 	AddActorObject(0, 0, ObjectType::OBJECT_BUILDING);
 }
 
@@ -52,6 +53,16 @@ void SceneMgr::Update()
 		if (m_objects[i]!=NULL) 
 		{
 			m_objects[i]->Update(t_ElapsedTime);
+			
+			if (m_objects[i]->GetType() == ObjectType::OBJECT_CHARACTER)
+			{
+				if (m_objects[i]->t_Arrow_CoolTime >= ARROW_COOL_TIME)
+				{
+					m_objects[i]->t_Arrow_CoolTime = 0;
+					AddActorObject(i, m_objects[i]->GetID(), ObjectType::OBJECT_ARROW);
+				}
+			}
+			//	삭제 처리
 			if (m_objects[i]->IsDead())
 			{
 				switch (m_objects[i]->GetType())
@@ -62,8 +73,11 @@ void SceneMgr::Update()
 				case ObjectType::OBJECT_BULLET:
 					--m_Bullet_objCnt;
 					break;
+				case ObjectType::OBJECT_ARROW:
+					--m_Arrow_objCnt;
+					break;
 				default:
-						break;
+					break;
 				}
 				delete m_objects[i];
 				m_objects[i] = NULL;
@@ -80,21 +94,23 @@ void SceneMgr::Update()
 		{
 			m_objects[index]->SetSpeed(300);
 		}
+
+		
 	}
 }
 //#define COLLIDE_REACTION
 void SceneMgr::Collide()
 {
 	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
-		if(m_objects[i]!=NULL)
+		if (m_objects[i] != NULL)
 			m_objects[i]->setFlagCollide(false);
 	ObjectType iType, jType;
-	for (int i = 0; i < MAX_OBJECTS_COUNT-1; ++i)
+	for (int i = 0; i < MAX_OBJECTS_COUNT - 1; ++i)
 	{
 		for (int j = i + 1; j < MAX_OBJECTS_COUNT; ++j)
 		{
 			//	Collide
-			if (m_objects[i]!=NULL && m_objects[j]!=NULL) {
+			if (m_objects[i] != NULL && m_objects[j] != NULL) {
 				if (m_objects[i]->getCollideRect().Check(
 					m_objects[j]->getCollideRect()))
 				{
@@ -137,6 +153,48 @@ void SceneMgr::Collide()
 					}
 					else if (iType == ObjectType::OBJECT_BULLET&&
 						jType == ObjectType::OBJECT_CHARACTER)
+					{
+						m_objects[j]->damage(m_objects[i]->getLife());
+						m_objects[i]->die();
+					}
+
+					if (iType == ObjectType::OBJECT_CHARACTER&&
+						jType == ObjectType::OBJECT_ARROW)
+					{
+						if (m_objects[i]->GetID() != m_objects[j]->GetID())
+						{
+							m_objects[i]->damage(m_objects[j]->getLife());
+							m_objects[j]->die();
+						}
+						else
+						{
+							m_objects[i]->setFlagCollide(false);
+							m_objects[j]->setFlagCollide(false);
+						}
+					}
+					else if (iType == ObjectType::OBJECT_ARROW&&
+						jType == ObjectType::OBJECT_CHARACTER)
+					{
+						if (m_objects[i]->GetID() != m_objects[j]->GetID())
+						{
+							m_objects[j]->damage(m_objects[i]->getLife());
+							m_objects[i]->die();
+						}
+						else
+						{
+							m_objects[i]->setFlagCollide(false);
+							m_objects[j]->setFlagCollide(false);
+						}
+					}
+
+					if (iType == ObjectType::OBJECT_BUILDING&&
+						jType == ObjectType::OBJECT_ARROW)
+					{
+						m_objects[i]->damage(m_objects[j]->getLife());
+						m_objects[j]->die();
+					}
+					else if (iType == ObjectType::OBJECT_ARROW&&
+						jType == ObjectType::OBJECT_BUILDING)
 					{
 						m_objects[j]->damage(m_objects[i]->getLife());
 						m_objects[i]->die();
@@ -184,6 +242,7 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 			m_objects[MAX_OBJECTS_COUNT-1]->Initialize(ObjectType::OBJECT_BUILDING,
 				m_objectsRenderer);
 			m_objects[MAX_OBJECTS_COUNT-1]->SetPosition(0, 0);
+			m_objects[MAX_OBJECTS_COUNT - 1]->SetTexture(buildingTex);
 			return MAX_OBJECTS_COUNT - 1;
 		break;
 	case ObjectType::OBJECT_CHARACTER:
@@ -198,6 +257,7 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 						m_objectsRenderer);
 					m_objects[i]->SetPosition(x, y);
 					m_objects[i]->SetLife(40);
+					m_objects[i]->SetID(++m_idAlignment);
 					++m_Character_objCnt;
 					return i;
 				}
@@ -220,7 +280,24 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 			}
 		}
 		break;
-	case ObjectType::OBJECT_ARROW:
+	case ObjectType::OBJECT_ARROW:	// x=owner objects' index , y=owner objects' ID
+		if (m_Arrow_objCnt < MAX_ARROW_COUNT) {
+			for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+			{
+				if (m_objects[i] == NULL)
+				{
+					Object* owner = m_objects[x];
+
+					m_objects[i] = new Object;
+					m_objects[i]->Initialize(ObjectType::OBJECT_ARROW,
+						m_objectsRenderer);
+					m_objects[i]->SetPosition(owner->getPosX(), owner->getPosY());
+					m_objects[i]->SetID(y);
+					++m_Arrow_objCnt;
+					return i;
+				}
+			}
+		}
 		break;
 	}
 	return -1;

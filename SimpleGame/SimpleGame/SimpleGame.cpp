@@ -21,6 +21,7 @@ but WITHOUT ANY WARRANTY.
 Renderer *g_Renderer = NULL;
 SceneMgr g_Scene;
 
+
 //Object object;
 int g = -250;
 void RenderScene(void)

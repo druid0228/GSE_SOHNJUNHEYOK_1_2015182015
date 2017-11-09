@@ -47,4 +47,5 @@ inline bool IsZero(double n) { return abs(n)<FLT_EPSILON; }
 #define CLEARCOLORBLACK	0.0f, 0.0f, 0.0f, 1.0f
 #define CLEARCOLOR	0.0f, 0.3f, 0.3f, 1.0f
 
+
 #include<Windows.h>

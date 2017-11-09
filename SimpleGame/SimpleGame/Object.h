@@ -9,19 +9,35 @@ class Object
 	float m_size;
 	float m_R, m_G, m_B, m_A;
 	bool m_collide;
+	int	m_id;
+
 
 	double m_life;
 	double m_lifeTime;
 	bool f_lifeTime = false;
 
+	bool m_haveTex = false;
+	unsigned int m_TextureID;
 
 	Renderer *m_Renderer = NULL;
 	Renderer *m_SceneRender = NULL;
-
 	ObjectType m_type;
+
+public:
+	double t_Arrow_CoolTime = 0;
+	
+
 public:
 	ObjectType GetType()const { return m_type; }
+	
+	void SetID(int id) { m_id = id; }
+	int GetID()const { return m_id; }
 
+	void SetTexture(unsigned int ID)
+	{
+		m_TextureID = ID;
+		m_haveTex = true;
+	}
 public:
 	void damage(double d) { m_life -= d; }
 	double getLife()const { return m_life; }
@@ -31,7 +47,13 @@ public:
 			(f_lifeTime&&m_lifeTime <= 0);};
 public:
 	void SetPosition(double x, double y) { m_posX = x; m_posY = y; }
-	void SetVector(double x, double y) { m_vecX = x; m_vecY = y; }
+	void SetVector(double x, double y) { 
+		m_vecX = x; m_vecY = y; 
+		float norm = sqrt(x*x + y*y);
+		if (IsZero(norm))norm = 1;
+		m_vecX /= norm;
+		m_vecY /= norm;
+	}
 	void PlusVector(double x, double y)
 	{
 		m_vecX += x;
@@ -52,6 +74,8 @@ public:
 	}
 	double getVecX()const { return m_vecX; }
 	double getVecY()const { return m_vecY; }
+	double getPosX()const { return m_posX; }
+	double getPosY()const { return m_posY; }
 	void setFlagCollide(bool b) { m_collide = b; }
 	bool getFlagCollide()const { return m_collide; }
 
