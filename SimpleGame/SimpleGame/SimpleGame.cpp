@@ -18,7 +18,6 @@ but WITHOUT ANY WARRANTY.
 //#include"Object.h"
 #include<math.h>
 
-Renderer *g_Renderer = NULL;
 SceneMgr g_Scene;
 
 
@@ -45,19 +44,18 @@ void MouseInput(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_UP)
 	{
-		if (g_Scene.CanObjectAdd()){
-			g_Scene.AddActorObject(x - 500 / 2, 500 / 2 - y,ObjectType::OBJECT_CHARACTER);
+		if (HALFHEIGHT - y <= 0) {
+			if (g_Scene.CanObjectAdd() && g_Scene.CanCharacterAdd()) {
+				g_Scene.AddActorObject(x - HALFWIDTH, HALFHEIGHT - y, ObjectType::OBJECT_CHARACTER, TEAM_2);
+			}
 		}
-		//object.SetPosition(x - 500 / 2, 500 / 2 - y);
-		//object.SetVector(rand()%100/(float)100, rand() % 100 / (float)100);
 	}
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN)
-	{
+	{	
 		//object.SetPosition(x - 500 / 2, 500 / 2 - y);
 		//object.SetPosition(0, 0);
 		//object.SetVector(0, 0);
 	}
-
 	RenderScene();
 }
 
@@ -94,7 +92,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(CLIENTWIDTH, CLIENTHEIGHT);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();
@@ -125,7 +123,6 @@ int main(int argc, char **argv)
 	g_Scene.Initalize();
 	glutMainLoop();
 
-	delete g_Renderer;
 
     return 0;
 }

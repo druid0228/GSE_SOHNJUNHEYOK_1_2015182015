@@ -1,6 +1,7 @@
 #pragma once
 
 class Renderer;
+
 class Object
 {
 	double m_posX, m_posY;
@@ -10,6 +11,8 @@ class Object
 	float m_R, m_G, m_B, m_A;
 	bool m_collide;
 	int	m_id;
+
+	int m_team = 0;
 
 
 	double m_life;
@@ -25,6 +28,7 @@ class Object
 
 public:
 	double t_Arrow_CoolTime = 0;
+	double t_Bullet_CoolTime = 0;
 	
 
 public:
@@ -67,6 +71,8 @@ public:
 	}
 	void SetSpeed(double speed) { m_speed = speed; }
 	void SetLife(double life) { m_life = life; }
+	void SetTeam(int t) { m_team = t; }
+	int GetTeam()const { return m_team; }
 
 public:
 	collideRect getCollideRect()const {
@@ -83,7 +89,7 @@ public:
 	Object();
 	virtual void Render();
 
-	virtual void Initialize(ObjectType type,Renderer* SceneRender);
+	virtual void Initialize(ObjectType type,Renderer* SceneRender,int team=0);
 	virtual void InitializeRand(Renderer *SceneRender);
 	virtual void InitializeRenderer();
 	virtual void Update(double ElapsedTime);

@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include"Object.h"
-#include "SceneMgr.h"
 #include"Renderer.h"
+#include "SceneMgr.h"
 
 SceneMgr::SceneMgr()
 {
 }
-
 
 SceneMgr::~SceneMgr()
 {
@@ -22,12 +21,13 @@ void SceneMgr::Initalize()
 	m_objectsRenderer = NULL;
 	ZeroMemory(m_objects, sizeof(Object*)*MAX_OBJECTS_COUNT);
 
-	m_objectsRenderer = new Renderer(500, 500);
+	m_objectsRenderer = new Renderer(CLIENTWIDTH, CLIENTHEIGHT);
 	srand(time(NULL));
 	if (!m_objectsRenderer->IsInitialized())
 	{
 		std::cout << "Renderer could not be initialized.. \n";
 	}
+	CTui.SetRenderer(m_objectsRenderer);
 
 	InitializeObjects();
 	TimeInit();
@@ -41,8 +41,15 @@ void SceneMgr::InitializeObjects()
 		m_objects[i]->InitializeRand(m_objectsRenderer);
 		++m_Character_objCnt;
 	}*/
-	buildingTex = m_objectsRenderer->CreatePngTexture("./Textures/building.png");
-	AddActorObject(0, 0, ObjectType::OBJECT_BUILDING);
+	buildingTex1 = m_objectsRenderer->CreatePngTexture("./Textures/building.png");
+	buildingTex2 = m_objectsRenderer->CreatePngTexture("./Textures/building2.png");
+	AddActorObject(-200, 300, ObjectType::OBJECT_BUILDING,TEAM_1);
+	AddActorObject(0, 300, ObjectType::OBJECT_BUILDING,TEAM_1);
+	AddActorObject(200, 300, ObjectType::OBJECT_BUILDING,TEAM_1);
+
+	AddActorObject(-200, -300, ObjectType::OBJECT_BUILDING, TEAM_2);
+	AddActorObject(0, -300, ObjectType::OBJECT_BUILDING, TEAM_2);
+	AddActorObject(200, -300, ObjectType::OBJECT_BUILDING, TEAM_2);
 }
 
 void SceneMgr::Update()
@@ -59,7 +66,17 @@ void SceneMgr::Update()
 				if (m_objects[i]->t_Arrow_CoolTime >= ARROW_COOL_TIME)
 				{
 					m_objects[i]->t_Arrow_CoolTime = 0;
-					AddActorObject(i, m_objects[i]->GetID(), ObjectType::OBJECT_ARROW);
+					AddActorObject(i, m_objects[i]->GetID(), ObjectType::OBJECT_ARROW, m_objects[i]->GetTeam());
+				}
+			}
+
+			//	Building은 자신이 직접 Bullet을 생성한다.
+			if (m_objects[i]->GetType() == ObjectType::OBJECT_BUILDING)
+			{
+				if (m_objects[i]->t_Bullet_CoolTime >= BULLET_COOL_TIME)
+				{
+					m_objects[i]->t_Bullet_CoolTime = 0;
+					AddActorObject(m_objects[i]->getPosX(), m_objects[i]->getPosY(), ObjectType::OBJECT_BULLET, m_objects[i]->GetTeam());
 				}
 			}
 			//	삭제 처리
@@ -84,19 +101,39 @@ void SceneMgr::Update()
 			}
 		}
 	}
-	t_lastBulletCreate += t_ElapsedTime;
-	if (t_lastBulletCreate >= 0.5f)
+	t_Team1Character += t_ElapsedTime;
+	t_Team2Character += t_ElapsedTime;
+	// 일괄적으로 Bullet 생성하는 것을 없앰
+	/*t_lastBulletCreate += t_ElapsedTime;*/
+	/*if (t_lastBulletCreate >= 5.0f)
 	{
 		int index;
 		t_lastBulletCreate = 0;
-		index=AddActorObject(0, 0, ObjectType::OBJECT_BULLET);
-		if (index != -1)
-		{
-			m_objects[index]->SetSpeed(300);
-		}
+		index=AddActorObject(-200, 300, ObjectType::OBJECT_BULLET,TEAM_1);
+		index=AddActorObject(0, 300, ObjectType::OBJECT_BULLET, TEAM_1);
+		index=AddActorObject(200, 300, ObjectType::OBJECT_BULLET, TEAM_1);
 
+		index = AddActorObject(-200, -300, ObjectType::OBJECT_BULLET, TEAM_2);
+		index = AddActorObject(0, -300, ObjectType::OBJECT_BULLET, TEAM_2);
+		index = AddActorObject(200, -300, ObjectType::OBJECT_BULLET, TEAM_2);
 		
+	}*/
+	if (t_Team1Character >= CHAR1_COOL_TIME)
+	{
+		t_Team1Character = 0;
+		AddActorObject(rand() % CLIENTWIDTH - HALFWIDTH, rand() % HALFHEIGHT,
+			ObjectType::OBJECT_CHARACTER, TEAM_1);
 	}
+	if (t_Team2Character >= CHAR2_COOL_TIME)
+	{
+		if (!f_CreateCharcter)
+		{
+			f_CreateCharcter = true;
+			t_Team2Character = 0;
+		}
+	}
+
+	CTui.Update(t_Team1Character, t_Team2Character,f_CreateCharcter);
 }
 //#define COLLIDE_REACTION
 void SceneMgr::Collide()
@@ -123,9 +160,7 @@ void SceneMgr::Collide()
 #endif // COLLIDE_REACTION
 					iType = m_objects[i]->GetType(); jType = m_objects[j]->GetType();
 					// 같은 타입이거나 같은편이면 충돌체크 패스
-					if (iType == jType ||
-						IsAlly(m_objects[i]->GetType(),
-							m_objects[j]->GetType()))
+					if (m_objects[i]->GetTeam() == m_objects[j]->GetTeam())
 						continue;
 
 					m_objects[i]->setFlagCollide(true);
@@ -153,6 +188,19 @@ void SceneMgr::Collide()
 					}
 					else if (iType == ObjectType::OBJECT_BULLET&&
 						jType == ObjectType::OBJECT_CHARACTER)
+					{
+						m_objects[j]->damage(m_objects[i]->getLife());
+						m_objects[i]->die();
+					}
+
+					if (iType == ObjectType::OBJECT_BUILDING&&
+						jType == ObjectType::OBJECT_BULLET)
+					{
+						m_objects[i]->damage(m_objects[j]->getLife());
+						m_objects[j]->die();
+					}
+					else if (iType == ObjectType::OBJECT_BULLET&&
+						jType == ObjectType::OBJECT_BUILDING)
 					{
 						m_objects[j]->damage(m_objects[i]->getLife());
 						m_objects[i]->die();
@@ -233,17 +281,30 @@ void SceneMgr::AddObject(int x, int y)
 	}
 }
 
-int SceneMgr::AddActorObject(int x, int y, ObjectType type)
+int SceneMgr::AddActorObject(int x, int y, ObjectType type,int team)
 {
 	switch (type)
 	{
 	case ObjectType::OBJECT_BUILDING:
-			m_objects[MAX_OBJECTS_COUNT-1] = new Object;
-			m_objects[MAX_OBJECTS_COUNT-1]->Initialize(ObjectType::OBJECT_BUILDING,
-				m_objectsRenderer);
-			m_objects[MAX_OBJECTS_COUNT-1]->SetPosition(0, 0);
-			m_objects[MAX_OBJECTS_COUNT - 1]->SetTexture(buildingTex);
-			return MAX_OBJECTS_COUNT - 1;
+		for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
+		{
+			if (m_objects[i] == NULL)
+			{
+				m_objects[i] = new Object;
+				m_objects[i]->Initialize(ObjectType::OBJECT_BUILDING,
+					m_objectsRenderer, team);
+				m_objects[i]->SetPosition(x, y);
+				if (team == TEAM_1)
+				{
+					m_objects[i]->SetTexture(buildingTex1);
+				}
+				else if (team == TEAM_2)
+				{
+					m_objects[i]->SetTexture(buildingTex2);
+				}
+				return i;
+			}
+		}
 		break;
 	case ObjectType::OBJECT_CHARACTER:
 		if (m_Character_objCnt < MAX_CHARACTER_COUNT)
@@ -254,11 +315,12 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 				{
 					m_objects[i] = new Object;
 					m_objects[i]->Initialize(ObjectType::OBJECT_CHARACTER,
-						m_objectsRenderer);
+						m_objectsRenderer, team);
 					m_objects[i]->SetPosition(x, y);
-					m_objects[i]->SetLife(40);
+					m_objects[i]->SetLife(10);
 					m_objects[i]->SetID(++m_idAlignment);
 					++m_Character_objCnt;
+					if (team == TEAM_2)f_CreateCharcter = false;
 					return i;
 				}
 			}
@@ -272,7 +334,7 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 				{
 					m_objects[i] = new Object;
 					m_objects[i]->Initialize(ObjectType::OBJECT_BULLET,
-						m_objectsRenderer);
+						m_objectsRenderer, team);
 					m_objects[i]->SetPosition(x, y);
 					++m_Bullet_objCnt;
 					return i;
@@ -290,7 +352,7 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 
 					m_objects[i] = new Object;
 					m_objects[i]->Initialize(ObjectType::OBJECT_ARROW,
-						m_objectsRenderer);
+						m_objectsRenderer, team);
 					m_objects[i]->SetPosition(owner->getPosX(), owner->getPosY());
 					m_objects[i]->SetID(y);
 					++m_Arrow_objCnt;
@@ -302,3 +364,5 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type)
 	}
 	return -1;
 }
+
+

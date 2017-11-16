@@ -49,15 +49,17 @@ void Object::Render()
 }
 //#define RANDOM_SIZE
 
-void Object::Initialize(ObjectType type, Renderer * SceneRender)
+void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 {
 	m_SceneRender = SceneRender;
 	m_type = type;
+	m_team = team;
+	t_Arrow_CoolTime = ARROW_COOL_TIME;
 	float norm;
 	switch (m_type)
 	{
 	case ObjectType::OBJECT_BUILDING:
-		m_size = 50;
+		m_size = 100;
 		m_life = 500;
 		m_speed = 0;
 		m_R = 1.0f;
@@ -70,9 +72,16 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_size = 10;
 		m_life = 10;
 		m_speed = 300;
-		m_R = 1.0f;
-		m_G = 1.0f;
-		m_B = 1.0f;
+		if (m_team == TEAM_1)	{
+			m_R = 1.0f;
+			m_G = 0.0f;
+			m_B = 0.0f;
+		}
+		else if (m_team == TEAM_2){
+			m_R = 0.0f;
+			m_G = 0.0f;
+			m_B = 1.0f;
+		}
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
 		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
@@ -86,11 +95,22 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_size = 2;
 		m_life = 20;
 		m_speed = 600;
-		m_R = 1.0f;
-		m_G = 0.0f;
-		m_B = 0.0f;
+		if (m_team == TEAM_1) {
+			m_R = 1.0f;
+			m_G = 0.0f;
+			m_B = 0.0f;
+		}
+		else if (m_team == TEAM_2) {
+			m_R = 0.0f;
+			m_G = 0.0f;
+			m_B = 1.0f;
+		}
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
+		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
+		if (IsZero(norm))norm = 1;
+		m_vecX /= norm;
+		m_vecY /= norm;
 		m_collide = false;
 		m_id = 0;
 		break;
@@ -98,11 +118,22 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender)
 		m_size = 2;
 		m_life = 10;
 		m_speed = 100;
-		m_R = 0.0f;
-		m_G = 1.0f;
-		m_B = 0.0f;
+		if (m_team == TEAM_1) {
+			m_R = 0.5f;
+			m_G = 0.2f;
+			m_B = 0.7f;
+		}
+		else if (m_team == TEAM_2) {
+			m_R = 1.0f;
+			m_G = 1.0f;
+			m_B = 0.0f;
+		}
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
+		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
+		if (IsZero(norm))norm = 1;
+		m_vecX /= norm;
+		m_vecY /= norm;
 		m_collide = false;
 		m_id = 0;
 		break;
@@ -144,7 +175,10 @@ void Object::InitializeRenderer()
 void Object::Update(double ElapsedTime)
 {
 	m_lifeTime -= ElapsedTime;
-	t_Arrow_CoolTime += ElapsedTime;
+	if(m_type==ObjectType::OBJECT_CHARACTER)
+		t_Arrow_CoolTime += ElapsedTime;
+	if (m_type == ObjectType::OBJECT_BUILDING)
+		t_Bullet_CoolTime += ElapsedTime;
 	MouseInputProcess();
 	KeyInputProcess();
 	SpecialKeyInputProcess();
@@ -156,20 +190,20 @@ void Object::Animate(double ElapsedTime)
 {
 	if (!IsZero(m_vecX))m_posX += m_vecX*m_speed*ElapsedTime;
 	if (!IsZero(m_vecY))m_posY += m_vecY*m_speed*ElapsedTime;
-	if (m_posX > 250) {
-		m_posX = 250;
+	if (m_posX > HALFWIDTH) {
+		m_posX = HALFWIDTH;
 		m_vecX = -m_vecX;
 	}
-	if (m_posX < -250) {
-		m_posX = -250;
+	if (m_posX < -HALFWIDTH) {
+		m_posX = -HALFWIDTH;
 		m_vecX = -m_vecX;
 	}
-	if (m_posY > 250) {
-		m_posY = 250;
+	if (m_posY > HALFHEIGHT) {
+		m_posY = HALFHEIGHT;
 		m_vecY = -m_vecY;
 	}
-	if (m_posY < -250) {
-		m_posY = -250;
+	if (m_posY < -HALFHEIGHT) {
+		m_posY = -HALFHEIGHT;
 		m_vecY = -m_vecY;
 	}
 }
