@@ -118,6 +118,8 @@ void SceneMgr::Update()
 		index = AddActorObject(200, -300, ObjectType::OBJECT_BULLET, TEAM_2);
 		
 	}*/
+
+
 	if (t_Team1Character >= CHAR1_COOL_TIME)
 	{
 		t_Team1Character = 0;
@@ -126,11 +128,8 @@ void SceneMgr::Update()
 	}
 	if (t_Team2Character >= CHAR2_COOL_TIME)
 	{
-		if (!f_CreateCharcter)
-		{
-			f_CreateCharcter = true;
-			t_Team2Character = 0;
-		}
+		t_Team2Character = CHAR2_COOL_TIME;
+		f_CreateCharcter = true;
 	}
 
 	CTui.Update(t_Team1Character, t_Team2Character,f_CreateCharcter);
@@ -317,7 +316,6 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type,int team)
 					m_objects[i]->Initialize(ObjectType::OBJECT_CHARACTER,
 						m_objectsRenderer, team);
 					m_objects[i]->SetPosition(x, y);
-					m_objects[i]->SetLife(10);
 					m_objects[i]->SetID(++m_idAlignment);
 					++m_Character_objCnt;
 					if (team == TEAM_2)f_CreateCharcter = false;

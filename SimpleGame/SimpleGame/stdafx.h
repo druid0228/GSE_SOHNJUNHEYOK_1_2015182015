@@ -38,6 +38,12 @@ enum {
 	TEAM_1,TEAM_2,TEAM_COUNT
 };
 
+enum {
+	LEVEL_GOD,LEVEL_SKY,LEVEL_GROUND,LEVEL_UNDERGROUND
+};
+
+#define RENDERLEVEL(lv) ((float) lv * 0.1f )
+
 //	need e 
 #include<math.h>
 #include<iostream>
@@ -50,16 +56,18 @@ inline bool IsZero(double n) { return abs(n)<FLT_EPSILON; }
 #define CLIENTHEIGHT	800
 #define HALFHEIGHT	 (CLIENTHEIGHT/2)
 
-#define MAX_OBJECTS_COUNT		500
-#define MAX_CHARACTER_COUNT	10
-#define MAX_BULLET_COUNT			50
-#define MAX_ARROW_COUNT			30
+#define MAX_OBJECTS_COUNT		512
+#define MAX_CHARACTER_COUNT	100
+#define MAX_BULLET_COUNT			100
+#define MAX_ARROW_COUNT			100
 
 #define ARROW_COOL_TIME			3.0f
 #define BULLET_COOL_TIME			10.0f
 
 #define CHAR1_COOL_TIME			3.0f
-#define CHAR2_COOL_TIME			7.0f
+#define CHAR2_COOL_TIME			1.0f
+
+#define LIFE_GAGUE_HEIGHT	4.0f
 
 #include<Windows.h>
 

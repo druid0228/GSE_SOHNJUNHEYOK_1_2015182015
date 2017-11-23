@@ -4,9 +4,10 @@ class Object;
 struct coolTimeUI {
 	double t_t1Char;
 	double t_t2Char;
-	double t1Posx = -HALFWIDTH + 20, t1PosY = HALFHEIGHT - 10;
-	double t2Posx = -HALFWIDTH + 20, t2PosY = -HALFHEIGHT + 10;
-	int size = 8;
+	int width = 100;
+	int height = 8;
+	double t1Posx = -HALFWIDTH + width / 2 + 10, t1PosY = HALFHEIGHT - 10 - height / 2;
+	double t2Posx = -HALFWIDTH + width / 2 + 10, t2PosY = -HALFHEIGHT + 10 + height / 2;
 	Renderer *Render = NULL;
 
 	void SetRenderer(Renderer *r) { Render = r; }
@@ -18,17 +19,33 @@ struct coolTimeUI {
 			t_t1Char = CHAR1_COOL_TIME;
 		if (t_t2Char > CHAR2_COOL_TIME)
 			t_t2Char = CHAR2_COOL_TIME;
-		if (c2)t_t2Char = CHAR2_COOL_TIME;
-		if (Render != NULL) {
+
+		if (Render != NULL)
+		{
+			Render->DrawSolidRectGauge(t1Posx, t1PosY, 0, width, height, 1, 0, 0, 1,
+				(t_t1Char / CHAR1_COOL_TIME), RENDERLEVEL(LEVEL_GOD));
+
+			if(t_t2Char==CHAR2_COOL_TIME)
+			{ 
+				Render->DrawSolidRectGauge(t2Posx, t2PosY, 0, width, height, 0, 1, 1, 1,
+					(t_t2Char / CHAR2_COOL_TIME), RENDERLEVEL(LEVEL_GOD));
+			}
+			else
+			{
+				Render->DrawSolidRectGauge(t2Posx, t2PosY, 0, width, height, 0, 0, 1, 1,
+					(t_t2Char / CHAR2_COOL_TIME), RENDERLEVEL(LEVEL_GOD));
+			}
+		}
+	/*	if (Render != NULL) {
 			for (int i = 0; i < (int)t_t1Char; ++i)
 			{
-				Render->DrawSolidRect(t1Posx + (size + 1)*i, t1PosY, 0, size, 1, 0, 0, 1);
+				Render->DrawSolidRect(t1Posx + (size + 1)*i, t1PosY, 0, size, 1, 0, 0, 1, RENDERLEVEL(LEVEL_SKY));
 			}
 			for (int i = 0; i < (int)t_t2Char; ++i)
 			{
-				Render->DrawSolidRect(t2Posx + (size + 1)*i, t2PosY, 0, size, 0, 0, 1, 1);
+				Render->DrawSolidRect(t2Posx + (size + 1)*i, t2PosY, 0, size, 0, 0, 1, 1, RENDERLEVEL(LEVEL_SKY));
 			}
-		}
+		}*/
 	}
 };
 
@@ -76,6 +93,7 @@ public:
 	void AddObject(int x, int y);
 	int AddActorObject(int x, int y, ObjectType type,int team=TEAM_1);
 	bool CanCharacterAdd()const{return f_CreateCharcter;}
+	void FlagCreatePlayerCharacter() { t_Team2Character = 0, f_CreateCharcter = false; }
 };
 
 

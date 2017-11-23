@@ -47,6 +47,7 @@ void MouseInput(int button, int state, int x, int y)
 		if (HALFHEIGHT - y <= 0) {
 			if (g_Scene.CanObjectAdd() && g_Scene.CanCharacterAdd()) {
 				g_Scene.AddActorObject(x - HALFWIDTH, HALFHEIGHT - y, ObjectType::OBJECT_CHARACTER, TEAM_2);
+				g_Scene.FlagCreatePlayerCharacter();
 			}
 		}
 	}

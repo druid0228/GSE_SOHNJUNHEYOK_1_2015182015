@@ -14,10 +14,14 @@ class Object
 
 	int m_team = 0;
 
+	int m_RenderLevel=0;
+	
 
 	double m_life;
+	double m_maxlife;
 	double m_lifeTime;
 	bool f_lifeTime = false;
+	bool f_lifeGague = false;
 
 	bool m_haveTex = false;
 	unsigned int m_TextureID;

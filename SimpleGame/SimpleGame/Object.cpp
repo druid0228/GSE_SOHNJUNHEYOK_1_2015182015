@@ -16,34 +16,38 @@ Object::Object()
 }
 
 #define COLLIDE_CHECK_RED
+#define COLLIDE_COLOR	1.0f , 0.0f, 1.0f, 1.0f
 void Object::Render()
 {
 #ifdef COLLIDE_CHECK_RED
-	if (!m_SceneRender) {
+	if (!m_SceneRender) {		// NOT USED
 		if (!m_collide)
-			m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+			m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A,RENDERLEVEL(m_RenderLevel));
 		else
-			m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, 0, 0, m_A);
+			m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, 0, 0, m_A, RENDERLEVEL(m_RenderLevel));
 	}
 	else
 	{
 		if(m_haveTex)
 		{
-			m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A, m_TextureID);
+			m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, 1, 1, 1, 1, m_TextureID, RENDERLEVEL(m_RenderLevel));
 		}
 		else {
 			if (!m_collide)
-				m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+				m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A, RENDERLEVEL(m_RenderLevel));
 			else
-				m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, 0, 0, m_A);
+				m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, 1 - m_R, 1 - m_G, 1 - m_B, m_A, RENDERLEVEL(m_RenderLevel));
 		}
+		if (f_lifeGague)
+			m_SceneRender->DrawSolidRectGauge(m_posX, m_posY + m_size / 2 + 2 * LIFE_GAGUE_HEIGHT, 0,
+				m_size, LIFE_GAGUE_HEIGHT, m_R, m_G, m_B, m_A, (float)(m_life / m_maxlife), RENDERLEVEL(LEVEL_SKY));
 	}
 #else
 	if (!m_SceneRender) {
-		m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+		m_Renderer->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A, RENDERLEVEL(m_RenderLevel));
 	}
 	else {
-		m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A);
+		m_SceneRender->DrawSolidRect(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, m_A, RENDERLEVEL(m_RenderLevel));
 	}
 #endif
 }
@@ -62,15 +66,24 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 		m_size = 100;
 		m_life = 500;
 		m_speed = 0;
-		m_R = 1.0f;
-		m_G = 1.0f;
-		m_B = 0.0f;
+		if (m_team == TEAM_1) {
+			m_R = 1.0f;
+			m_G = 0.0f;
+			m_B = 0.0f;
+		}
+		else if (m_team == TEAM_2) {
+			m_R = 0.0f;
+			m_G = 0.0f;
+			m_B = 1.0f;
+		}
 		m_collide = false;
 		m_id = 0;
+		m_RenderLevel = LEVEL_SKY;
+		f_lifeGague = true;
 		break;
 	case ObjectType::OBJECT_CHARACTER:
-		m_size = 10;
-		m_life = 10;
+		m_size = 30;
+		m_life = 100;
 		m_speed = 300;
 		if (m_team == TEAM_1)	{
 			m_R = 1.0f;
@@ -82,6 +95,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 			m_G = 0.0f;
 			m_B = 1.0f;
 		}
+		m_RenderLevel = LEVEL_GROUND;
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
 		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
@@ -90,10 +104,11 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 		m_vecY /= norm;
 		m_collide = false;
 		m_id = 0;
+		f_lifeGague = true;
 		break;
 	case ObjectType::OBJECT_BULLET:
-		m_size = 2;
-		m_life = 20;
+		m_size = 4;
+		m_life = 15;
 		m_speed = 600;
 		if (m_team == TEAM_1) {
 			m_R = 1.0f;
@@ -105,6 +120,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 			m_G = 0.0f;
 			m_B = 1.0f;
 		}
+		m_RenderLevel = LEVEL_UNDERGROUND;
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
 		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
@@ -115,7 +131,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 		m_id = 0;
 		break;
 	case ObjectType::OBJECT_ARROW:
-		m_size = 2;
+		m_size = 4;
 		m_life = 10;
 		m_speed = 100;
 		if (m_team == TEAM_1) {
@@ -128,6 +144,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 			m_G = 1.0f;
 			m_B = 0.0f;
 		}
+		m_RenderLevel = LEVEL_UNDERGROUND;
 		m_vecX = (rand() % 200 - 100)*0.01;
 		m_vecY = (rand() % 200 - 100)*0.01;
 		norm = sqrt(m_vecX*m_vecX + m_vecY*m_vecY);
@@ -138,6 +155,8 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 		m_id = 0;
 		break;
 	}
+
+	m_maxlife = m_life;
 }
 
 // NOT	USE
@@ -190,20 +209,30 @@ void Object::Animate(double ElapsedTime)
 {
 	if (!IsZero(m_vecX))m_posX += m_vecX*m_speed*ElapsedTime;
 	if (!IsZero(m_vecY))m_posY += m_vecY*m_speed*ElapsedTime;
-	if (m_posX > HALFWIDTH) {
-		m_posX = HALFWIDTH;
+	float fhalfSize = m_size / 2;
+
+	if (m_posX  > HALFWIDTH-fhalfSize) {
+		m_posX = HALFWIDTH-fhalfSize;
+		if (m_type == ObjectType::OBJECT_ARROW || m_type == ObjectType::OBJECT_BULLET)
+			m_life = 0;
 		m_vecX = -m_vecX;
 	}
-	if (m_posX < -HALFWIDTH) {
-		m_posX = -HALFWIDTH;
+	if (m_posX  < -HALFWIDTH+fhalfSize) {
+		m_posX = -HALFWIDTH+fhalfSize;
+		if (m_type == ObjectType::OBJECT_ARROW || m_type == ObjectType::OBJECT_BULLET)
+			m_life = 0;
 		m_vecX = -m_vecX;
 	}
-	if (m_posY > HALFHEIGHT) {
-		m_posY = HALFHEIGHT;
+	if (m_posY- fhalfSize > HALFHEIGHT-fhalfSize) {
+		m_posY = HALFHEIGHT-fhalfSize;
+		if (m_type == ObjectType::OBJECT_ARROW || m_type == ObjectType::OBJECT_BULLET)
+			m_life = 0;
 		m_vecY = -m_vecY;
 	}
-	if (m_posY < -HALFHEIGHT) {
-		m_posY = -HALFHEIGHT;
+	if (m_posY + fhalfSize< -HALFHEIGHT+fhalfSize) {
+		m_posY = -HALFHEIGHT+fhalfSize;
+		if (m_type == ObjectType::OBJECT_ARROW || m_type == ObjectType::OBJECT_BULLET)
+			m_life = 0;
 		m_vecY = -m_vecY;
 	}
 }
