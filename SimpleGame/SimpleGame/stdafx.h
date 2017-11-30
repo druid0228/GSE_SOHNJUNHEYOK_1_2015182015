@@ -39,7 +39,8 @@ enum {
 };
 
 enum {
-	LEVEL_GOD,LEVEL_SKY,LEVEL_GROUND,LEVEL_UNDERGROUND
+	LEVEL_GOD,LEVEL_SKY,LEVEL_GROUND,LEVEL_UNDERGROUND,
+	LEVEL_BACKGROUND
 };
 
 #define RENDERLEVEL(lv) ((float) lv * 0.1f )
@@ -62,7 +63,7 @@ inline bool IsZero(double n) { return abs(n)<FLT_EPSILON; }
 #define MAX_ARROW_COUNT			100
 
 #define ARROW_COOL_TIME			3.0f
-#define BULLET_COOL_TIME			10.0f
+#define BULLET_COOL_TIME			1.0f
 
 #define CHAR1_COOL_TIME			3.0f
 #define CHAR2_COOL_TIME			1.0f

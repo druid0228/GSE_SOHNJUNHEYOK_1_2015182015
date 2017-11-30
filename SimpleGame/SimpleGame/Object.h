@@ -24,7 +24,17 @@ class Object
 	bool f_lifeGague = false;
 
 	bool m_haveTex = false;
+	bool m_haveSprite = false;
+	double curSpriteX = 0;
+	int totalSpriteX = 0;
+
+	double curSpriteY = 0;
+	int totalSpriteY=0;
+
+	bool m_isParticle = false;
 	unsigned int m_TextureID;
+
+	double m_accumulateTime = 0;
 
 	Renderer *m_Renderer = NULL;
 	Renderer *m_SceneRender = NULL;

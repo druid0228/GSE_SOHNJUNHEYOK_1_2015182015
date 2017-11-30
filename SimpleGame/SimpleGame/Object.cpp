@@ -30,7 +30,17 @@ void Object::Render()
 	{
 		if(m_haveTex)
 		{
-			m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, 1, 1, 1, 1, m_TextureID, RENDERLEVEL(m_RenderLevel));
+			if (m_haveSprite)
+			{
+				m_SceneRender->DrawTexturedRectSeq(m_posX, m_posY, 0, m_size, m_R, m_G, m_B, 1, m_TextureID,
+					curSpriteX,curSpriteY,totalSpriteX,totalSpriteY,RENDERLEVEL(m_RenderLevel));
+			}
+			else if (m_isParticle) {
+				m_SceneRender->DrawParticle(m_posX, m_posY, 0, m_size*0.8,
+					m_R, m_G, m_B, 1, -m_vecX, -m_vecY, m_TextureID, m_accumulateTime);
+			}
+			else
+				m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, 1, 1, 1, 1, m_TextureID, RENDERLEVEL(m_RenderLevel));
 		}
 		else {
 			if (!m_collide)
@@ -53,7 +63,7 @@ void Object::Render()
 }
 //#define RANDOM_SIZE
 
-void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
+void Object::Initialize(ObjectType type, Renderer * SceneRender, int team)
 {
 	m_SceneRender = SceneRender;
 	m_type = type;
@@ -85,14 +95,19 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 		m_size = 30;
 		m_life = 100;
 		m_speed = 300;
-		if (m_team == TEAM_1)	{
+		m_TextureID = m_SceneRender->CreatePngTexture("./Textures/char/Robot.png");
+		m_haveSprite = true;
+		m_haveTex = true;
+		totalSpriteX = 1;
+		totalSpriteY = 11;
+		if (m_team == TEAM_1) {
 			m_R = 1.0f;
-			m_G = 0.0f;
-			m_B = 0.0f;
+			m_G = 0.2f;
+			m_B = 0.2f;
 		}
-		else if (m_team == TEAM_2){
-			m_R = 0.0f;
-			m_G = 0.0f;
+		else if (m_team == TEAM_2) {
+			m_R = 0.2f;
+			m_G = 0.2f;
 			m_B = 1.0f;
 		}
 		m_RenderLevel = LEVEL_GROUND;
@@ -110,14 +125,18 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender,int team)
 		m_size = 4;
 		m_life = 15;
 		m_speed = 600;
+		m_TextureID = m_SceneRender->CreatePngTexture("./Textures/particle/particle1.png");
+		m_haveTex = true;
+		m_isParticle = true;
+
 		if (m_team == TEAM_1) {
 			m_R = 1.0f;
-			m_G = 0.0f;
-			m_B = 0.0f;
+			m_G = 0.3f;
+			m_B = 0.3f;
 		}
 		else if (m_team == TEAM_2) {
-			m_R = 0.0f;
-			m_G = 0.0f;
+			m_R = 0.3f;
+			m_G = 0.3f;
 			m_B = 1.0f;
 		}
 		m_RenderLevel = LEVEL_UNDERGROUND;
@@ -194,6 +213,7 @@ void Object::InitializeRenderer()
 void Object::Update(double ElapsedTime)
 {
 	m_lifeTime -= ElapsedTime;
+	m_accumulateTime += ElapsedTime;
 	if(m_type==ObjectType::OBJECT_CHARACTER)
 		t_Arrow_CoolTime += ElapsedTime;
 	if (m_type == ObjectType::OBJECT_BUILDING)
@@ -234,6 +254,14 @@ void Object::Animate(double ElapsedTime)
 		if (m_type == ObjectType::OBJECT_ARROW || m_type == ObjectType::OBJECT_BULLET)
 			m_life = 0;
 		m_vecY = -m_vecY;
+	}
+
+	if (m_haveSprite) {
+		curSpriteX += ElapsedTime*10;
+		curSpriteY += ElapsedTime*10;
+
+		if ((int)curSpriteX > totalSpriteX)curSpriteX = 0;
+		if ((int)curSpriteY > totalSpriteY)curSpriteY = 0;
 	}
 }
 

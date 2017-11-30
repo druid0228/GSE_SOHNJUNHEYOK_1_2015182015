@@ -69,6 +69,7 @@ class SceneMgr
 	bool Team2_building[3];
 
 	unsigned int buildingTex1, buildingTex2;
+	unsigned int backgroundTex;
 
 	//tmp
 	coolTimeUI CTui;

@@ -29,6 +29,8 @@ void SceneMgr::Initalize()
 	}
 	CTui.SetRenderer(m_objectsRenderer);
 
+	backgroundTex = m_objectsRenderer->CreatePngTexture("./Textures/Background/back8.png");
+
 	InitializeObjects();
 	TimeInit();
 }
@@ -54,6 +56,11 @@ void SceneMgr::InitializeObjects()
 
 void SceneMgr::Update()
 {
+	//	Background;
+	m_objectsRenderer->DrawTexturedRect(0, 0, 0, CLIENTHEIGHT, 0.5, 0.5, 0.5, 0.5,
+		backgroundTex, RENDERLEVEL(LEVEL_BACKGROUND));
+
+	//	Object
 	Collide();
 	for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
 	{
