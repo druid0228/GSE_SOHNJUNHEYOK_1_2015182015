@@ -59,6 +59,7 @@ void SceneMgr::InitializeObjects()
 
 void SceneMgr::Update()
 {
+	waveAnimation(0);
 	//	Background;
 	m_objectsRenderer->DrawTexturedRect(0, 0, 0, CLIENTHEIGHT, 0.5, 0.5, 0.5, 0.5,
 		backgroundTex, RENDERLEVEL(LEVEL_BACKGROUND));
@@ -96,6 +97,7 @@ void SceneMgr::Update()
 				{
 				case ObjectType::OBJECT_CHARACTER:
 					m_sound->PlaySound(soundCollision, false, 0.2f);
+					SetWaveAnimation(0);
 					--m_Character_objCnt;
 					break;
 				case ObjectType::OBJECT_BULLET:
@@ -375,6 +377,48 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type,int team)
 		break;
 	}
 	return -1;
+}
+
+#define WAVE_XMAX		5.0f
+#define WAVE_XMIN		-5.0f
+#define WAVE_YMAX		2.0f
+#define WAVE_YMIN		-2.0f
+void SceneMgr::SetWaveAnimation(int arg)
+{
+	if (isWave == false)
+	{
+		waveX = 0;
+		waveY = 0;
+		waveSx = 1;
+		waveSy = 1;
+		waveDx = 100;
+		waveDy = 0;
+		t_waveStart = t_current_time;
+		isWave = true;
+	}
+	else {
+		//	reset Time
+		t_waveStart = t_current_time;
+	}
+}
+
+void SceneMgr::waveAnimation(float arg)
+{
+	if (isWave == false)return;
+	if ((t_current_time - t_waveStart)*0.001f > 1.0f) {
+		isWave = false;
+		return;
+	}
+	if (waveX >= WAVE_XMAX) {
+		waveDx *= -1;
+	}
+	if (waveX <= WAVE_XMIN) {
+		waveDx *= -1;
+	}
+	waveX += waveDx*t_ElapsedTime;
+	waveY += waveDy*t_ElapsedTime;
+
+	m_objectsRenderer->SetSceneTransform(waveX, waveY, waveSx, waveSy);
 }
 
 

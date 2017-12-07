@@ -79,6 +79,15 @@ class SceneMgr
 	int soundBG;
 	int soundCollision;
 
+	bool isWave=false;
+	float waveX=0;
+	float waveY=0;
+	float waveSx=1;
+	float waveSy=1;
+	float waveDx=0;
+	float waveDy=0;
+	double t_waveStart;
+
 public:
 	SceneMgr();
 	~SceneMgr();
@@ -101,6 +110,8 @@ public:
 	int AddActorObject(int x, int y, ObjectType type,int team=TEAM_1);
 	bool CanCharacterAdd()const{return f_CreateCharcter;}
 	void FlagCreatePlayerCharacter() { t_Team2Character = 0, f_CreateCharcter = false; }
+	void SetWaveAnimation(int arg);
+	void waveAnimation(float arg);
 };
 
 
