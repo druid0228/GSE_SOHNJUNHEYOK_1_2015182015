@@ -39,8 +39,9 @@ void Object::Render()
 				m_SceneRender->DrawParticle(m_posX, m_posY, 0, m_size*0.8,
 					m_R, m_G, m_B, 1, -m_vecX, -m_vecY, m_TextureID, m_accumulateTime);
 			}
-			else
+			else {
 				m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, 1, 1, 1, 1, m_TextureID, RENDERLEVEL(m_RenderLevel));
+			}
 		}
 		else {
 			if (!m_collide)
@@ -176,27 +177,6 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender, int team)
 	}
 
 	m_maxlife = m_life;
-}
-
-// NOT	USE
-void Object::InitializeRand(Renderer *Render)
-{
-	m_posX = rand() % 500 - 250;
-	m_posY = rand() % 500 - 250;
-	m_vecX = (rand() % 200 - 100)*0.01;
-	m_vecY = (rand() % 200 - 100)*0.01;
-	m_speed = rand() % 100+50;
-	m_R = m_G = m_B = m_A = 1;
-#ifdef RANDOM_SIZE
-	m_size = rand() % 50 + 10;
-#else
-	m_size = 40;
-#endif 
-	m_life = 10;
-	m_collide = false;
-	m_SceneRender = Render;
-	m_lifeTime = 10;
-	InitializeRenderer();
 }
 
 void Object::InitializeRenderer()

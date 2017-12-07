@@ -104,7 +104,6 @@ public:
 	virtual void Render();
 
 	virtual void Initialize(ObjectType type,Renderer* SceneRender,int team=0);
-	virtual void InitializeRand(Renderer *SceneRender);
 	virtual void InitializeRenderer();
 	virtual void Update(double ElapsedTime);
 	virtual void Animate(double ElapsedTime);

@@ -2,7 +2,7 @@
 #include"Object.h"
 #include"Renderer.h"
 #include "SceneMgr.h"
-
+#include"Sound.h"
 SceneMgr::SceneMgr()
 {
 }
@@ -28,8 +28,10 @@ void SceneMgr::Initalize()
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 	CTui.SetRenderer(m_objectsRenderer);
-
 	backgroundTex = m_objectsRenderer->CreatePngTexture("./Textures/Background/back8.png");
+	m_sound = new Sound();
+	soundBG = m_sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
+	m_sound->PlaySound(soundBG, true, 0.2f);
 
 	InitializeObjects();
 	TimeInit();
@@ -140,6 +142,7 @@ void SceneMgr::Update()
 	}
 
 	CTui.Update(t_Team1Character, t_Team2Character,f_CreateCharcter);
+	m_objectsRenderer->DrawText(0, 0, GLUT_BITMAP_HELVETICA_12, 1, 0, 1, "TestText");
 }
 //#define COLLIDE_REACTION
 void SceneMgr::Collide()
@@ -270,6 +273,9 @@ void SceneMgr::Destory()
 			m_objects[i] = NULL;
 		}
 	}
+	if (m_sound) {
+		delete m_sound;
+	}
 }
 
 void SceneMgr::AddObject(int x, int y)
@@ -279,7 +285,6 @@ void SceneMgr::AddObject(int x, int y)
 		if (m_objects[i] == NULL)
 		{
 			m_objects[i] = new Object;
-			m_objects[i]->InitializeRand(m_objectsRenderer);
 			m_objects[i]->SetPosition(x, y);
 			++m_Character_objCnt;
 			break;

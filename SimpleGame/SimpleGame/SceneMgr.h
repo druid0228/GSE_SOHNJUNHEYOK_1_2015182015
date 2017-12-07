@@ -1,13 +1,14 @@
 #pragma once
 
 class Object;
+class Sound;
 struct coolTimeUI {
 	double t_t1Char;
 	double t_t2Char;
 	int width = 100;
 	int height = 8;
-	double t1Posx = -HALFWIDTH + width / 2 + 10, t1PosY = HALFHEIGHT - 10 - height / 2;
-	double t2Posx = -HALFWIDTH + width / 2 + 10, t2PosY = -HALFHEIGHT + 10 + height / 2;
+	double t1PosX = -HALFWIDTH + width / 2 + 10, t1PosY = HALFHEIGHT - 10 - height / 2;
+	double t2PosX = -HALFWIDTH + width / 2 + 10, t2PosY = -HALFHEIGHT + 10 + height / 2;
 	Renderer *Render = NULL;
 
 	void SetRenderer(Renderer *r) { Render = r; }
@@ -22,17 +23,17 @@ struct coolTimeUI {
 
 		if (Render != NULL)
 		{
-			Render->DrawSolidRectGauge(t1Posx, t1PosY, 0, width, height, 1, 0, 0, 1,
+			Render->DrawSolidRectGauge(t1PosX, t1PosY, 0, width, height, 1, 0, 0, 1,
 				(t_t1Char / CHAR1_COOL_TIME), RENDERLEVEL(LEVEL_GOD));
 
 			if(t_t2Char==CHAR2_COOL_TIME)
 			{ 
-				Render->DrawSolidRectGauge(t2Posx, t2PosY, 0, width, height, 0, 1, 1, 1,
+				Render->DrawSolidRectGauge(t2PosX, t2PosY, 0, width, height, 0, 1, 1, 1,
 					(t_t2Char / CHAR2_COOL_TIME), RENDERLEVEL(LEVEL_GOD));
 			}
 			else
 			{
-				Render->DrawSolidRectGauge(t2Posx, t2PosY, 0, width, height, 0, 0, 1, 1,
+				Render->DrawSolidRectGauge(t2PosX, t2PosY, 0, width, height, 0, 0, 1, 1,
 					(t_t2Char / CHAR2_COOL_TIME), RENDERLEVEL(LEVEL_GOD));
 			}
 		}
@@ -73,6 +74,10 @@ class SceneMgr
 
 	//tmp
 	coolTimeUI CTui;
+
+	Sound* m_sound;
+	int soundBG;
+
 public:
 	SceneMgr();
 	~SceneMgr();
