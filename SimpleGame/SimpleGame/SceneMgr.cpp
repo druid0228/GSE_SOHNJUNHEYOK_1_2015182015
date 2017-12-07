@@ -31,6 +31,7 @@ void SceneMgr::Initalize()
 	backgroundTex = m_objectsRenderer->CreatePngTexture("./Textures/Background/back8.png");
 	m_sound = new Sound();
 	soundBG = m_sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
+	soundCollision = m_sound->CreateSound("./Dependencies/SoundSamples/explosion.wav");
 	m_sound->PlaySound(soundBG, true, 0.2f);
 
 	InitializeObjects();
@@ -94,6 +95,7 @@ void SceneMgr::Update()
 				switch (m_objects[i]->GetType())
 				{
 				case ObjectType::OBJECT_CHARACTER:
+					m_sound->PlaySound(soundCollision, false, 0.2f);
 					--m_Character_objCnt;
 					break;
 				case ObjectType::OBJECT_BULLET:

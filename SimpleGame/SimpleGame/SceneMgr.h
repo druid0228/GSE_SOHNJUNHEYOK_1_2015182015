@@ -77,6 +77,7 @@ class SceneMgr
 
 	Sound* m_sound;
 	int soundBG;
+	int soundCollision;
 
 public:
 	SceneMgr();
