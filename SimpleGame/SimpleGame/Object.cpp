@@ -93,7 +93,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender, int team)
 		f_lifeGague = true;
 		break;
 	case ObjectType::OBJECT_CHARACTER:
-		m_size = 30;
+		m_size = 50;
 		m_life = 100;
 		m_speed = 100;
 		m_haveSprite = true;

@@ -19,7 +19,7 @@ void CClimate::init(Renderer * render, unsigned int * tex_arr, unsigned int ntex
 	n_tex = ntex;
 	m_size = 1;
 	gDirx = -0.3;
-	gDiry = -0.3;
+	gDiry = 0;
 }
 
 void CClimate::Render()

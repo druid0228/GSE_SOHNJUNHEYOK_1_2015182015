@@ -29,7 +29,7 @@ void SceneMgr::Initalize()
 		std::cout << "Renderer could not be initialized.. \n";
 	}
 	CTui.SetRenderer(m_objectsRenderer);
-	backgroundTex = m_objectsRenderer->CreatePngTexture("./Textures/Background/back8.png");
+	backgroundTex = m_objectsRenderer->CreatePngTexture("./Textures/Background/marsSurfaceMaterial.png");
 	robotTex = m_objectsRenderer->CreatePngTexture("./Textures/char/Robot.png");
 	bulletTex = m_objectsRenderer->CreatePngTexture("./Textures/particle/particle1.png");
 
@@ -39,7 +39,7 @@ void SceneMgr::Initalize()
 	m_sound->PlaySound(soundBG, true, 0.2f);
 
 	m_climate = new CClimate();
-	climateTex1 = m_objectsRenderer->CreatePngTexture("./Textures/particle/climate_snow2.png");
+	climateTex1 = m_objectsRenderer->CreatePngTexture("./Textures/particle/1a9020e727fbd4a9fd5aa966a67c2953.png");
 	m_climate->init(m_objectsRenderer, &climateTex1, 1);
 	
 	InitializeObjects();
@@ -48,14 +48,8 @@ void SceneMgr::Initalize()
 
 void SceneMgr::InitializeObjects()
 {
-	/*for (int i = 0; i < MAX_OBJECTS_COUNT; ++i)
-	{
-		m_objects[i] = new Object;
-		m_objects[i]->InitializeRand(m_objectsRenderer);
-		++m_Character_objCnt;
-	}*/
-	buildingTex1 = m_objectsRenderer->CreatePngTexture("./Textures/building.png");
-	buildingTex2 = m_objectsRenderer->CreatePngTexture("./Textures/building2.png");
+	buildingTex1 = m_objectsRenderer->CreatePngTexture("./Textures/building/Barracks_(Empire)_l7.png");
+	buildingTex2 = m_objectsRenderer->CreatePngTexture("./Textures/building/Barracks_icon.png");
 	AddActorObject(-200, 300, ObjectType::OBJECT_BUILDING,TEAM_1);
 	AddActorObject(0, 300, ObjectType::OBJECT_BUILDING,TEAM_1);
 	AddActorObject(200, 300, ObjectType::OBJECT_BUILDING,TEAM_1);
@@ -75,7 +69,7 @@ void SceneMgr::Update()
 	m_climate->Render();
 
 	//	Background;
-	m_objectsRenderer->DrawTexturedRect(0, 0, 0, CLIENTHEIGHT, 0.5, 0.5, 0.5, 0.5,
+	m_objectsRenderer->DrawTexturedRect(0, 0, 0, CLIENTHEIGHT, 0.8, 0.8, 0.8, 0.8,
 		backgroundTex, RENDERLEVEL(LEVEL_BACKGROUND));
 
 	//	Object
