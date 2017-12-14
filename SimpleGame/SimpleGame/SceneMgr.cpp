@@ -3,6 +3,7 @@
 #include"Renderer.h"
 #include "SceneMgr.h"
 #include"Sound.h"
+#include"Climate.h"
 SceneMgr::SceneMgr()
 {
 }
@@ -29,11 +30,18 @@ void SceneMgr::Initalize()
 	}
 	CTui.SetRenderer(m_objectsRenderer);
 	backgroundTex = m_objectsRenderer->CreatePngTexture("./Textures/Background/back8.png");
+	robotTex = m_objectsRenderer->CreatePngTexture("./Textures/char/Robot.png");
+	bulletTex = m_objectsRenderer->CreatePngTexture("./Textures/particle/particle1.png");
+
 	m_sound = new Sound();
 	soundBG = m_sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
 	soundCollision = m_sound->CreateSound("./Dependencies/SoundSamples/explosion.wav");
 	m_sound->PlaySound(soundBG, true, 0.2f);
 
+	m_climate = new CClimate();
+	climateTex1 = m_objectsRenderer->CreatePngTexture("./Textures/particle/climate_snow2.png");
+	m_climate->init(m_objectsRenderer, &climateTex1, 1);
+	
 	InitializeObjects();
 	TimeInit();
 }
@@ -59,7 +67,13 @@ void SceneMgr::InitializeObjects()
 
 void SceneMgr::Update()
 {
+	//	wave
 	waveAnimation(0);
+	
+	// climate
+	m_climate->Update(t_ElapsedTime);
+	m_climate->Render();
+
 	//	Background;
 	m_objectsRenderer->DrawTexturedRect(0, 0, 0, CLIENTHEIGHT, 0.5, 0.5, 0.5, 0.5,
 		backgroundTex, RENDERLEVEL(LEVEL_BACKGROUND));
@@ -280,6 +294,11 @@ void SceneMgr::Destory()
 	if (m_sound) {
 		delete m_sound;
 	}
+	if (m_climate) {
+		delete m_climate;
+	}
+	if (m_objectsRenderer)
+		delete m_objectsRenderer;
 }
 
 void SceneMgr::AddObject(int x, int y)
@@ -333,6 +352,7 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type,int team)
 						m_objectsRenderer, team);
 					m_objects[i]->SetPosition(x, y);
 					m_objects[i]->SetID(++m_idAlignment);
+					m_objects[i]->SetTexture(robotTex);
 					++m_Character_objCnt;
 					if (team == TEAM_2)f_CreateCharcter = false;
 					return i;
@@ -350,6 +370,7 @@ int SceneMgr::AddActorObject(int x, int y, ObjectType type,int team)
 					m_objects[i]->Initialize(ObjectType::OBJECT_BULLET,
 						m_objectsRenderer, team);
 					m_objects[i]->SetPosition(x, y);
+					m_objects[i]->SetTexture(bulletTex);
 					++m_Bullet_objCnt;
 					return i;
 				}

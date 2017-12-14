@@ -37,7 +37,7 @@ void Object::Render()
 			}
 			else if (m_isParticle) {
 				m_SceneRender->DrawParticle(m_posX, m_posY, 0, m_size*0.8,
-					m_R, m_G, m_B, 1, -m_vecX, -m_vecY, m_TextureID, m_accumulateTime);
+					m_R, m_G, m_B, 1, -m_vecX, -m_vecY, m_TextureID, m_accumulateTime,RENDERLEVEL(LEVEL_SKY));
 			}
 			else {
 				m_SceneRender->DrawTexturedRect(m_posX, m_posY, 0, m_size, 1, 1, 1, 1, m_TextureID, RENDERLEVEL(m_RenderLevel));
@@ -95,8 +95,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender, int team)
 	case ObjectType::OBJECT_CHARACTER:
 		m_size = 30;
 		m_life = 100;
-		m_speed = 300;
-		m_TextureID = m_SceneRender->CreatePngTexture("./Textures/char/Robot.png");
+		m_speed = 100;
 		m_haveSprite = true;
 		m_haveTex = true;
 		totalSpriteX = 1;
@@ -125,8 +124,7 @@ void Object::Initialize(ObjectType type, Renderer * SceneRender, int team)
 	case ObjectType::OBJECT_BULLET:
 		m_size = 4;
 		m_life = 15;
-		m_speed = 600;
-		m_TextureID = m_SceneRender->CreatePngTexture("./Textures/particle/particle1.png");
+		m_speed = 150;
 		m_haveTex = true;
 		m_isParticle = true;
 

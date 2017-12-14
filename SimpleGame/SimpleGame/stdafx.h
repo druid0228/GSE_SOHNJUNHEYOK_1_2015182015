@@ -25,8 +25,6 @@ struct collideRect
 	}
 };
 
-
-
 enum class ObjectType {
 	OBJECT_BUILDING,
 	OBJECT_CHARACTER,

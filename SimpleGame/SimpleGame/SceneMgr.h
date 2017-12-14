@@ -2,6 +2,7 @@
 
 class Object;
 class Sound;
+class CClimate;
 struct coolTimeUI {
 	double t_t1Char;
 	double t_t2Char;
@@ -68,6 +69,8 @@ class SceneMgr
 	int m_Arrow_objCnt = 0;
 	bool Team1_building[3];
 	bool Team2_building[3];
+	unsigned int robotTex;
+	unsigned int bulletTex;
 
 	unsigned int buildingTex1, buildingTex2;
 	unsigned int backgroundTex;
@@ -87,6 +90,9 @@ class SceneMgr
 	float waveDx=0;
 	float waveDy=0;
 	double t_waveStart;
+
+	CClimate* m_climate;
+	unsigned int climateTex1;
 
 public:
 	SceneMgr();
